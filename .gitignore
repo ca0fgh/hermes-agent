@@ -27,22 +27,18 @@ act/
 .pip-cache/
 .uv-cache/
 compose.hermes.local.yml
-export*
+/export*
 __pycache__/model_tools.cpython-310.pyc
 __pycache__/web_tools.cpython-310.pyc
 logs/
-data/
-# Bundled community plugin index seed (shipped as package data) — the bare
-# `data/` pattern above would otherwise swallow it.
-!hermes_cli/data/
-!hermes_cli/data/plugin_index.json
+/data/
 .pytest_cache/
 test_durations.json
 .pytest-cache/
 tmp/
 temp_vision_images/
 hermes-*/*
-examples/
+/examples/
 tests/quick_test_dataset.jsonl
 tests/sample_dataset.jsonl
 run_datagen_kimik2-thinking.sh
@@ -96,6 +92,7 @@ apps/desktop/src/**/*.d.ts
 # e.g. hermes-bots): plugin.js IS the source, not tsc output. No .tsx
 # sibling exists, so the stale-shadow hazard above cannot apply.
 !apps/desktop/src/plugins/*/plugin.js
+!apps/desktop/src/plugins/*/plugin.runtime.js
 !apps/desktop/src/global.d.ts
 !apps/desktop/src/vite-env.d.ts
 
@@ -114,9 +111,7 @@ apps/desktop/release/
 apps/desktop/.staging-*/
 *.tsbuildinfo
 
-# Web UI assets — synced from @nous-research/ui at build time via
-# `npm run sync-assets` (see web/package.json).
-web/public/fonts/
+# Generated design-system images; bundled web/public/fonts/ are source assets.
 web/public/ds-assets/
 
 # Release script temp files
@@ -220,3 +215,17 @@ native/fts5_cjk/*.so
 
 # Disposable profile created by scripts/probe_active_session_exclusivity.py
 .probe-home/
+
+# 本机环境配置；脱敏示例可以提交。
+.env
+.env.*
+!.env.example
+!.env.sample
+!.env.template
+!.env.*.example
+!.env.*.sample
+!.env.*.template
+
+# 本机工具状态、系统杂项和可重新生成的缓存。
+Thumbs.db
+**/.claude/settings.local.json
