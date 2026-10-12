@@ -5,14 +5,9 @@ name = "hermes-agent"
 version = "0.21.0"
 description = "The self-improving AI agent — creates skills from experience, improves them during use, and runs anywhere"
 readme = "README.md"
-# Upper bound is load-bearing, not cosmetic. uv resolves the project's
-# Python from `requires-python`, and an inherited `UV_PYTHON` env var (or a
-# fresh distro whose newest interpreter uv auto-picks) will otherwise select
-# 3.14, where Rust-backed transitives (e.g. pydantic-core) have no cp314
-# wheel yet and fall back to a maturin source build that fails. Capping at
-# <3.14 makes uv refuse 3.14 with a clear error instead of attempting that
-# build. Raise the ceiling once our Rust transitives ship cp314 wheels.
-requires-python = ">=3.11,<3.14"
+# Python 3.15 is verified with the pinned core dependencies below.
+# Keep an upper bound so uv does not select an unverified future Python minor.
+requires-python = ">=3.11,<3.16"
 authors = [{ name = "Nous Research" }]
 license = "MIT"
 license-files = ["LICENSE"]
@@ -57,11 +52,11 @@ dependencies = [
   # self-heal path for lean/broken installs — keep the pin below and the
   # lazy pin in lockstep.
   "firecrawl-anydoc==0.2.4",
-  # Bumped from 2.12.5 to 2.13.4 to pull in pydantic-core 2.46.4.
+  # 2.14.1 pulls in pydantic-core 2.50.1 with Python 3.15 wheels.
   # pydantic-core 2.41.5 (pulled by 2.12.5) segfaults when the OpenAI SDK's
   # Responses API resource is exercised from a non-main thread, which is the
   # codex_responses dispatch in agent/chat_completion_helpers.py:_call.
-  "pydantic==2.13.4",
+  "pydantic==2.14.1",
   # Interactive CLI (prompt_toolkit is used directly by cli.py)
   "prompt_toolkit==3.0.52",
   # Cron scheduler (built-in feature — scheduled cron/interval jobs use croniter).
@@ -395,6 +390,8 @@ hermes-acp = "acp_adapter.entry:main"
 
 [tool.uv]
 override-dependencies = [
+  # MCP's JSON Schema dependency needs the published Python 3.15 native wheels.
+  "rpds-py==2026.9.1",
   # discord.py's latest published version, 2.7.1, pins pynacl at <1.6. however, pynacl 1.5.0 has known vulnerabilities.
   # discord.py has updated pynacl to 1.6 on `main`, but has not yet published a patch release.
   # so, we force-override this to pynacl 1.6. here.
@@ -523,6 +520,8 @@ psutil = false
 pvporcupine = false
 pyasn1 = false
 pydantic = false
+# Exact transitive pin selected by pydantic above, including its Python 3.15 wheels.
+pydantic-core = false
 pyjwt = false
 pytest = false
 pytest-asyncio = false
@@ -534,6 +533,7 @@ pyyaml = false
 qrcode = false
 requests = false
 rich = false
+rpds-py = false
 ruamel-yaml = false
 ruff = false
 sentencepiece = false
